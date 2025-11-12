@@ -68,6 +68,25 @@ h1 {
     background-color: #0056b3;
 }
 
+.filter-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.filter-container select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#due-date-input, #priority-input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
 ul {
     list-style: none;
     padding: 0;
@@ -115,6 +134,24 @@ li.completed span {
     color: #aaa;
 }
 
+.due-date {
+    font-size: 12px;
+    color: #888;
+    margin-left: 10px;
+}
+
+li[data-priority="high"] {
+    border-left: 5px solid #dc3545;
+}
+
+li[data-priority="medium"] {
+    border-left: 5px solid #ffc107;
+}
+
+li[data-priority="low"] {
+    border-left: 5px solid #28a745;
+}
+
 .delete-btn {
     background: #dc3545;
     color: white;
@@ -126,4 +163,34 @@ li.completed span {
 
 .delete-btn:hover {
     background: #c82333;
+}
+
+.edit-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.edit-btn:hover {
+    background: #218838;
+}
+
+#clear-completed-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+#clear-completed-btn:hover {
+    background-color: #138496;
 }

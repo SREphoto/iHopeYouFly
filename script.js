@@ -1,21 +1,39 @@
 document.addEventListener('DOMContentLoaded', () => {
     const taskInput = document.getElementById('task-input');
+    const dueDateInput = document.getElementById('due-date-input');
+    const priorityInput = document.getElementById('priority-input');
     const addTaskBtn = document.getElementById('add-task-btn');
     const taskList = document.getElementById('task-list');
+    const clearCompletedBtn = document.getElementById('clear-completed-btn');
+    const sortTasks = document.getElementById('sort-tasks');
+    const filterTasks = document.getElementById('filter-tasks');
 
     // --- Core Functions ---
 
     function createTaskElement(task) {
         const li = document.createElement('li');
+        li.dataset.priority = task.priority;
 
         // Add span for the task text to avoid including button text
         const taskTextSpan = document.createElement('span');
         taskTextSpan.textContent = task.text;
         li.appendChild(taskTextSpan);
 
+        if (task.dueDate) {
+            const dueDateSpan = document.createElement('span');
+            dueDateSpan.className = 'due-date';
+            dueDateSpan.textContent = task.dueDate;
+            li.appendChild(dueDateSpan);
+        }
+
         if (task.completed) {
             li.classList.add('completed');
         }
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.className = 'edit-btn';
+        li.appendChild(editBtn);
 
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = 'Delete';
@@ -40,11 +58,35 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+        // Event listener for editing
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (editBtn.textContent === 'Edit') {
+                const currentText = taskTextSpan.textContent;
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = currentText;
+                li.insertBefore(input, taskTextSpan);
+                li.removeChild(taskTextSpan);
+                editBtn.textContent = 'Save';
+            } else {
+                const input = li.querySelector('input[type="text"]');
+                taskTextSpan.textContent = input.value;
+                li.insertBefore(taskTextSpan, input);
+                li.removeChild(input);
+                editBtn.textContent = 'Edit';
+                saveTasks();
+            }
+        });
+
         return li;
     }
 
     function addTask() {
         const taskText = taskInput.value.trim();
+        const dueDate = dueDateInput.value;
+        const priority = priorityInput.value;
+
         if (taskText === '') {
             taskInput.classList.add('input-error');
             setTimeout(() => {
@@ -53,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const task = { text: taskText, completed: false };
+        const task = { text: taskText, completed: false, dueDate: dueDate, priority: priority };
         const taskElement = createTaskElement(task);
         taskList.appendChild(taskElement);
 
@@ -63,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 10);
 
         taskInput.value = '';
+        dueDateInput.value = '';
         saveTasks();
     }
 
@@ -71,10 +114,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveTasks() {
         const tasks = [];
         document.querySelectorAll('#task-list li').forEach(li => {
-            tasks.push({
-                text: li.querySelector('span').textContent,
-                completed: li.classList.contains('completed')
-            });
+            const taskTextElement = li.querySelector('span') || li.querySelector('input[type="text"]');
+            const dueDateElement = li.querySelector('.due-date');
+            if (taskTextElement) {
+                tasks.push({
+                    text: taskTextElement.textContent || taskTextElement.value,
+                    completed: li.classList.contains('completed'),
+                    dueDate: dueDateElement ? dueDateElement.textContent : '',
+                    priority: li.dataset.priority
+                });
+            }
         });
         localStorage.setItem('tasks', JSON.stringify(tasks));
     }
@@ -89,6 +138,57 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+
+    function clearCompletedTasks() {
+        document.querySelectorAll('#task-list li.completed').forEach(li => {
+            li.classList.add('removing');
+            li.addEventListener('transitionend', () => {
+                if (li.parentNode) {
+                    taskList.removeChild(li);
+                    saveTasks();
+                }
+            });
+        });
+    }
+
+
+    function updateTasks() {
+        const filterValue = filterTasks.value;
+        const sortValue = sortTasks.value;
+        const tasks = Array.from(taskList.querySelectorAll('li'));
+
+        // Filtering
+        tasks.forEach(task => {
+            let show = true;
+            if (filterValue === 'completed' && !task.classList.contains('completed')) {
+                show = false;
+            } else if (filterValue === 'incomplete' && task.classList.contains('completed')) {
+                show = false;
+            } else if (['high', 'medium', 'low'].includes(filterValue) && task.dataset.priority !== filterValue) {
+                show = false;
+            }
+            task.style.display = show ? 'flex' : 'none';
+        });
+
+        // Sorting
+        if (sortValue !== 'default') {
+            tasks.sort((a, b) => {
+                if (sortValue === 'due-date') {
+                    const dateA = new Date(a.querySelector('.due-date')?.textContent);
+                    const dateB = new Date(b.querySelector('.due-date')?.textContent);
+                    return dateA - dateB;
+                } else if (sortValue === 'priority') {
+                    const priorityA = a.dataset.priority;
+                    const priorityB = b.dataset.priority;
+                    const priorityOrder = { high: 1, medium: 2, low: 3 };
+                    return priorityOrder[priorityA] - priorityOrder[priorityB];
+                }
+                return 0;
+            });
+            tasks.forEach(task => taskList.appendChild(task));
+        }
+    }
+
     // --- Event Listeners ---
 
     addTaskBtn.addEventListener('click', addTask);
@@ -97,6 +197,9 @@ document.addEventListener('DOMContentLoaded', () => {
             addTask();
         }
     });
+    clearCompletedBtn.addEventListener('click', clearCompletedTasks);
+    sortTasks.addEventListener('change', updateTasks);
+    filterTasks.addEventListener('change', updateTasks);
 
     // --- Initial Load ---
 

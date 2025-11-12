@@ -11,9 +11,31 @@
         <h1>To-Do List</h1>
         <div class="input-container">
             <input type="text" id="task-input" placeholder="Add a new task...">
+            <input type="date" id="due-date-input">
+            <select id="priority-input">
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
             <button id="add-task-btn">Add</button>
         </div>
+        <div class="filter-container">
+            <select id="sort-tasks">
+                <option value="default">Sort by</option>
+                <option value="due-date">Due Date</option>
+                <option value="priority">Priority</option>
+            </select>
+            <select id="filter-tasks">
+                <option value="all">Filter by</option>
+                <option value="completed">Completed</option>
+                <option value="incomplete">Incomplete</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
+        </div>
         <ul id="task-list"></ul>
+        <button id="clear-completed-btn">Clear Completed</button>
     </div>
     <script src="script.js"></script>
 </body>
