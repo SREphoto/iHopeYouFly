@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskInput = document.getElementById('task-input');
     const addTaskBtn = document.getElementById('add-task-btn');
     const taskList = document.getElementById('task-list');
+    const clearCompletedBtn = document.getElementById('clear-completed-btn');
 
     // --- Core Functions ---
 
@@ -118,6 +119,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+
+    function clearCompletedTasks() {
+        document.querySelectorAll('#task-list li.completed').forEach(li => {
+            li.classList.add('removing');
+            li.addEventListener('transitionend', () => {
+                if (li.parentNode) {
+                    taskList.removeChild(li);
+                    saveTasks();
+                }
+            });
+        });
+    }
+
     // --- Event Listeners ---
 
     addTaskBtn.addEventListener('click', addTask);
@@ -126,6 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
             addTask();
         }
     });
+
+    clearCompletedBtn.addEventListener('click', clearCompletedTasks);
 
     // --- Initial Load ---
 
