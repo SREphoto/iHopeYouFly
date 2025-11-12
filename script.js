@@ -294,6 +294,8 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggleBtn.addEventListener('click', toggleTheme);
 
 
+    clearCompletedBtn.addEventListener('click', clearCompletedTasks);
+
     // --- Initial Load ---
 
     loadTasks();
