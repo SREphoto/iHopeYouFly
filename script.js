@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sortTasks = document.getElementById('sort-tasks');
     const filterTasks = document.getElementById('filter-tasks');
     const toggleViewBtn = document.getElementById('toggle-view-btn');
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const listView = document.getElementById('list-view');
     const calendarView = document.getElementById('calendar-view');
     const monthYear = document.getElementById('month-year');
@@ -230,6 +231,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            themeToggleBtn.textContent = 'Light Mode';
+        } else {
+            localStorage.setItem('theme', 'light');
+            themeToggleBtn.textContent = 'Dark Mode';
+        }
+    }
+
+    function loadTheme() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggleBtn.textContent = 'Light Mode';
+        }
+    }
+
     // --- Event Listeners ---
 
     addTaskBtn.addEventListener('click', addTask);
@@ -269,9 +291,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         generateCalendar(currentMonth, currentYear);
     });
+    themeToggleBtn.addEventListener('click', toggleTheme);
 
 
     // --- Initial Load ---
 
     loadTasks();
+    loadTheme();
 });

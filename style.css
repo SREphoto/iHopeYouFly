@@ -248,3 +248,40 @@ li[data-priority="low"] {
 .calendar-task[data-priority="low"] {
     background-color: #28a745;
 }
+
+/* Dark Mode */
+.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.dark-mode .container {
+    background: #1e1e1e;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode #task-input,
+.dark-mode #due-date-input,
+.dark-mode #priority-input,
+.dark-mode .filter-container select {
+    background-color: #2c2c2c;
+    color: #e0e0e0;
+    border-color: #444;
+}
+
+.dark-mode li {
+    background: #2c2c2c;
+    border-color: #444;
+}
+
+.dark-mode li:hover {
+    background-color: #333;
+}
+
+.dark-mode li.completed span {
+    color: #888;
+}
+
+.dark-mode .calendar-grid > div {
+    border-color: #444;
+}
