@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const taskInput = document.getElementById('task-input');
+    const dueDateInput = document.getElementById('due-date-input');
+    const priorityInput = document.getElementById('priority-input');
     const addTaskBtn = document.getElementById('add-task-btn');
     const taskList = document.getElementById('task-list');
     const clearCompletedBtn = document.getElementById('clear-completed-btn');
@@ -8,11 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createTaskElement(task) {
         const li = document.createElement('li');
+        li.dataset.priority = task.priority;
 
         // Add span for the task text to avoid including button text
         const taskTextSpan = document.createElement('span');
         taskTextSpan.textContent = task.text;
         li.appendChild(taskTextSpan);
+
+        if (task.dueDate) {
+            const dueDateSpan = document.createElement('span');
+            dueDateSpan.className = 'due-date';
+            dueDateSpan.textContent = task.dueDate;
+            li.appendChild(dueDateSpan);
+        }
 
         if (task.completed) {
             li.classList.add('completed');
@@ -72,6 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function addTask() {
         const taskText = taskInput.value.trim();
+        const dueDate = dueDateInput.value;
+        const priority = priorityInput.value;
+
         if (taskText === '') {
             taskInput.classList.add('input-error');
             setTimeout(() => {
@@ -80,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const task = { text: taskText, completed: false };
+        const task = { text: taskText, completed: false, dueDate: dueDate, priority: priority };
         const taskElement = createTaskElement(task);
         taskList.appendChild(taskElement);
 
@@ -90,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 10);
 
         taskInput.value = '';
+        dueDateInput.value = '';
         saveTasks();
     }
 
@@ -99,10 +113,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const tasks = [];
         document.querySelectorAll('#task-list li').forEach(li => {
             const taskTextElement = li.querySelector('span') || li.querySelector('input[type="text"]');
+            const dueDateElement = li.querySelector('.due-date');
             if (taskTextElement) {
                 tasks.push({
                     text: taskTextElement.textContent || taskTextElement.value,
-                    completed: li.classList.contains('completed')
+                    completed: li.classList.contains('completed'),
+                    dueDate: dueDateElement ? dueDateElement.textContent : '',
+                    priority: li.dataset.priority
                 });
             }
         });
