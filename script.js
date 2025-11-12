@@ -17,6 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
             li.classList.add('completed');
         }
 
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.className = 'edit-btn';
+        li.appendChild(editBtn);
+
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = 'Delete';
         deleteBtn.className = 'delete-btn';
@@ -38,6 +43,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     saveTasks();
                 }
             });
+        });
+
+        // Event listener for editing
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (editBtn.textContent === 'Edit') {
+                const currentText = taskTextSpan.textContent;
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = currentText;
+                li.insertBefore(input, taskTextSpan);
+                li.removeChild(taskTextSpan);
+                editBtn.textContent = 'Save';
+            } else {
+                const input = li.querySelector('input[type="text"]');
+                taskTextSpan.textContent = input.value;
+                li.insertBefore(taskTextSpan, input);
+                li.removeChild(input);
+                editBtn.textContent = 'Edit';
+                saveTasks();
+            }
         });
 
         return li;
@@ -71,10 +97,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveTasks() {
         const tasks = [];
         document.querySelectorAll('#task-list li').forEach(li => {
-            tasks.push({
-                text: li.querySelector('span').textContent,
-                completed: li.classList.contains('completed')
-            });
+            const taskTextElement = li.querySelector('span') || li.querySelector('input[type="text"]');
+            if (taskTextElement) {
+                tasks.push({
+                    text: taskTextElement.textContent || taskTextElement.value,
+                    completed: li.classList.contains('completed')
+                });
+            }
         });
         localStorage.setItem('tasks', JSON.stringify(tasks));
     }
